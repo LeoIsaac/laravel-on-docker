@@ -1,19 +1,21 @@
-version: '2'
-services:
-  mysql:
-    build: ./mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: pass
-      MYSQL_DATABASE: laravel
-    volumes:
-      - db:/var/lib/mysql
-  php:
-    build: ./php
+web:
+    container_name: web
+    build: php
     ports:
-      - '80:80'
+        - 80:80
     volumes:
-      - ./www:/var/www
-    depends_on:
-      - mysql
-volumes:
-  db:
+        - ./laravel:/var/www/html
+        - ./php/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    links:
+        - mysql:mysql
+
+mysql:
+    container_name: mysql
+    image: mysql:5.7
+    volumes:
+        - ./laravel:/var/www/html
+    environment:
+        MYSQL_ROOT_PASSWORD: pass
+        MYSQL_DATABASE: laravel
+        MYSQL_USER: isaac
+        MYSQL_PASSWORD: pass
